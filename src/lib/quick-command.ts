@@ -47,8 +47,8 @@ export function resolvePaymentCommand<T extends CommandCharge>(
       const name = normalizeName(c.client_name_snapshot);
       return name !== q && name.split(" ").some((_, i, words) => words.slice(i).join(" ").startsWith(q));
     });
-    if (exact.length === 1 && partial.length === 0) {
-      const charge = exact[0];
+    const charge = exact[0];
+    if (exact.length === 1 && partial.length === 0 && charge) {
       return charge.status === "paid"
         ? { kind: "already_paid", term, charge }
         : { kind: "match", term, charge };

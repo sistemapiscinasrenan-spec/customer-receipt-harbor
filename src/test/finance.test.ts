@@ -53,7 +53,7 @@ describe("month indicators", () => {
   it("groups charges by due day in ascending order", () => {
     const groups = groupByDueDay([pending(1, 20), paid(1, 5), pending(1, 10), paid(1, 5)]);
     expect(groups.map((g) => g.day)).toEqual([5, 10, 20]);
-    expect(groups[0].items).toHaveLength(2);
+    expect(groups[0]?.items).toHaveLength(2);
   });
 });
 

@@ -25,23 +25,23 @@ describe("quick payment command", () => {
 
   it("ignores accents and case", () => {
     const [r] = resolvePaymentCommand("lucia pagou", charges);
-    expect(r.kind).toBe("match");
+    expect(r?.kind).toBe("match");
   });
 
   it("asks for a choice when a name is ambiguous", () => {
     const [r] = resolvePaymentCommand("Renata pagou", charges);
-    expect(r.kind).toBe("choose");
-    if (r.kind === "choose") expect(r.candidates.map((c) => c.id).sort()).toEqual(["renata", "renata-c"]);
+    expect(r?.kind).toBe("choose");
+    if (r?.kind === "choose") expect(r.candidates.map((c: CommandCharge) => c.id).sort()).toEqual(["renata", "renata-c"]);
   });
 
   it("never auto-selects a partial name", () => {
     const [r] = resolvePaymentCommand("Guilherme pagou", charges);
-    expect(r.kind).toBe("choose");
+    expect(r?.kind).toBe("choose");
   });
 
   it("reports unknown names and already-paid charges", () => {
     const r = resolvePaymentCommand("Fulano e Casquinha pagaram", charges);
-    expect(r[0].kind).toBe("not_found");
-    expect(r[1].kind).toBe("already_paid");
+    expect(r[0]?.kind).toBe("not_found");
+    expect(r[1]?.kind).toBe("already_paid");
   });
 });

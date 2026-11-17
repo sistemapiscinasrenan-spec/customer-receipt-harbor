@@ -44,7 +44,7 @@ export const Route = createFileRoute("/_authenticated/clientes")({
   ),
   errorComponent: ({ error }) => (
     <AppShell>
-      <p className="rounded-lg bg-danger-soft p-4 text-sm text-danger">{error.message}</p>
+      <p className="rounded-lg bg-danger-soft p-4 text-sm text-danger">{error instanceof Error ? error.message : "Erro ao carregar."}</p>
     </AppShell>
   ),
   component: () => (

@@ -31,7 +31,8 @@ export function ClientHistoryDialog({ client, onOpenChange }: { client: Client |
             <div className="max-h-80 overflow-y-auto rounded-lg border">
               <ul className="divide-y text-sm">
                 {history.data.map((c) => {
-                  const [y, m] = c.reference_month.split("-").map(Number);
+                  const y = Number(c.reference_month.slice(0, 4));
+                  const m = Number(c.reference_month.slice(5, 7));
                   return (
                     <li key={c.id} className="flex items-center gap-3 px-3 py-2.5">
                       <div className="min-w-0 flex-1">

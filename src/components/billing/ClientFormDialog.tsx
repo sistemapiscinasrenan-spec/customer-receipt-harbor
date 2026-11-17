@@ -27,7 +27,7 @@ export function ClientFormDialog({
   const [amount, setAmount] = useState("");
   const [dueDay, setDueDay] = useState("");
   const [includeNow, setIncludeNow] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<{ name?: string; amount?: string; dueDay?: string }>({});
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export function ClientFormDialog({
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const next: Record<string, string> = {};
+    const next: { name?: string; amount?: string; dueDay?: string } = {};
     const cents = parseBRLInput(amount);
     const day = Number(dueDay);
     if (!name.trim()) next.name = "Informe o nome do cliente.";
