@@ -14,16 +14,128 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          created_at: string
+          deactivated_at: string | null
+          due_day: number
+          id: string
+          is_active: boolean
+          name: string
+          recurring_amount: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deactivated_at?: string | null
+          due_day: number
+          id?: string
+          is_active?: boolean
+          name: string
+          recurring_amount: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deactivated_at?: string | null
+          due_day?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          recurring_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      monthly_charges: {
+        Row: {
+          amount: number
+          client_id: string
+          client_name_snapshot: string
+          created_at: string
+          due_date: string
+          id: string
+          paid_at: string | null
+          reference_month: string
+          status: Database["public"]["Enums"]["charge_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          client_id: string
+          client_name_snapshot: string
+          created_at?: string
+          due_date: string
+          id?: string
+          paid_at?: string | null
+          reference_month: string
+          status?: Database["public"]["Enums"]["charge_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          client_id?: string
+          client_name_snapshot?: string
+          created_at?: string
+          due_date?: string
+          id?: string
+          paid_at?: string | null
+          reference_month?: string
+          status?: Database["public"]["Enums"]["charge_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_charges_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_monthly_charges: {
+        Args: { p_client_ids?: string[]; p_month: string }
+        Returns: number
+      }
+      has_app_access: { Args: { _user_id: string }; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "member"
+      charge_status: "pending" | "paid"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +262,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "member"],
+      charge_status: ["pending", "paid"],
+    },
   },
 } as const
