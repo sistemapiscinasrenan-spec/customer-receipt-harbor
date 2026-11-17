@@ -28,3 +28,12 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+
+- Data access goes from the browser through the generated Supabase client with RLS (`has_app_access`); no server functions are needed for CRUD. Why: single-company app, RLS already enforces who can read/write.
+- Access model: every signed-in user with a row in `user_roles` sees the whole portfolio; the first account created (while no admin exists) becomes admin via an `auth.users` trigger. Why: no multi-tenant requirement, but signups must not expose financial data.
+- Money is computed in integer cents (`src/lib/money.ts`) and stored as `numeric(10,2)`; never use float math on amounts. Why: totals must always close (billed = received + pending).
+- `monthly_charges` rows are snapshots: a DB trigger blocks changes to name/amount/due date after generation and manages `paid_at`; status changes always filter on the opposite status so repeated clicks can't double-count. Why: history must never be rewritten by later client edits.
+- Monthly charges are only created through `generate_monthly_charges` (ON CONFLICT DO NOTHING on client+month). Why: generation is explicit and idempotent.
+- Indicator, grouping and quick-command rules live in pure modules under `src/lib/` with tests in `src/test/`. Why: business rules stay testable without a browser.
