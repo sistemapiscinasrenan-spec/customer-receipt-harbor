@@ -81,7 +81,7 @@ export function GenerateDialog({
               <ul className="divide-y text-sm">
                 {missing.map((c) => (
                   <li key={c.id} className="flex items-center justify-between gap-3 px-3 py-2">
-                    <span className="truncate">{c.name}</span>
+                    <span className="min-w-0 flex-1 break-words sm:truncate">{c.name}</span>
                     <span className="num shrink-0 text-muted-foreground">
                       dia {String(c.due_day).padStart(2, "0")} · {formatBRL(toCents(c.recurring_amount))}
                     </span>

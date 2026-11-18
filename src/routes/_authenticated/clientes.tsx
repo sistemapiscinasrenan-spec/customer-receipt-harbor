@@ -182,7 +182,7 @@ function Clientes() {
             {visible.map((c) => (
               <li key={c.id} className="grid grid-cols-[1fr_auto] items-center gap-x-3 gap-y-1 px-4 py-3 md:grid-cols-[1fr_6rem_7rem_7rem_7rem_3rem]">
                 <div className="min-w-0">
-                  <div className="truncate font-medium">{c.name}</div>
+                  <div className="break-words font-medium sm:truncate">{c.name}</div>
                   <div className="text-xs text-muted-foreground md:hidden">
                     Dia {String(c.due_day).padStart(2, "0")} · {formatBRL(toCents(c.recurring_amount))}
                   </div>

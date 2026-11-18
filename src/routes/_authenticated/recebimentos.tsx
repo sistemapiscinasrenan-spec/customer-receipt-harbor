@@ -212,31 +212,36 @@ function Recebimentos() {
                         return (
                           <li
                             key={`${c.id}-${flashIds.has(c.id) ? c.updated_at : ""}`}
-                            className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-4 py-3 sm:flex ${flashIds.has(c.id) ? "animate-row-flash" : ""}`}
+                            className={`px-4 py-3 sm:flex sm:items-center sm:gap-3 ${flashIds.has(c.id) ? "animate-row-flash" : ""}`}
                           >
                             <div className="hidden w-24 shrink-0 sm:block"><StatusBadge status={c.status} /></div>
-                            <div className="min-w-0 flex-1">
-                              <div className="truncate font-medium">{c.client_name_snapshot}</div>
+                            <div className="min-w-0 sm:flex-1">
+                              <div className="break-words text-[15px] font-medium leading-snug sm:truncate sm:text-sm">{c.client_name_snapshot}</div>
                               {c.status === "paid" && c.paid_at && (
                                 <div className="text-xs text-muted-foreground">Pago em {formatTimestampBR(c.paid_at)}</div>
                               )}
                             </div>
-                            <div className="num shrink-0 text-right font-semibold">{formatBRL(toCents(c.amount))}</div>
-                            <div className="col-span-2 flex items-center justify-between gap-2 sm:w-44 sm:shrink-0 sm:justify-end">
-                              <span className="sm:hidden"><StatusBadge status={c.status} /></span>
-                              {c.status === "pending" ? (
-                                <Button size="sm" variant="soft-success" className="h-10 sm:h-8" disabled={busy} onClick={() => changeStatus([c.id], "paid")}>
-                                  {busy ? <Loader2 className="animate-spin" /> : <Check />}
-                                  <span className="hidden sm:inline">Marcar como pago</span>
-                                  <span className="sm:hidden">Marcar pago</span>
-                                </Button>
-                              ) : (
-                                <Button size="sm" variant="ghost" className="h-10 text-muted-foreground sm:h-8" disabled={busy} onClick={() => changeStatus([c.id], "pending")}>
-                                  {busy ? <Loader2 className="animate-spin" /> : <RotateCcw />}
-                                  <span className="hidden sm:inline">Desfazer pagamento</span>
-                                  <span className="sm:hidden">Desfazer</span>
-                                </Button>
-                              )}
+                            <div className="mt-2 flex items-center justify-between gap-2 sm:mt-0 sm:contents">
+                              <div className="flex min-w-0 items-center gap-2 sm:hidden">
+                                <StatusBadge status={c.status} />
+                                <span className="num truncate text-sm font-semibold">{formatBRL(toCents(c.amount))}</span>
+                              </div>
+                              <div className="num hidden shrink-0 text-right font-semibold sm:block">{formatBRL(toCents(c.amount))}</div>
+                              <div className="sm:flex sm:w-44 sm:shrink-0 sm:items-center sm:justify-end sm:gap-2">
+                                {c.status === "pending" ? (
+                                  <Button size="sm" variant="soft-success" className="h-10 sm:h-8" disabled={busy} onClick={() => changeStatus([c.id], "paid")}>
+                                    {busy ? <Loader2 className="animate-spin" /> : <Check />}
+                                    <span className="hidden sm:inline">Marcar como pago</span>
+                                    <span className="sm:hidden">Marcar pago</span>
+                                  </Button>
+                                ) : (
+                                  <Button size="sm" variant="ghost" className="h-10 text-muted-foreground sm:h-8" disabled={busy} onClick={() => changeStatus([c.id], "pending")}>
+                                    {busy ? <Loader2 className="animate-spin" /> : <RotateCcw />}
+                                    <span className="hidden sm:inline">Desfazer pagamento</span>
+                                    <span className="sm:hidden">Desfazer</span>
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </li>
                         );

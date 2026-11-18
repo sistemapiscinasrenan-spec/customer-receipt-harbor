@@ -7,3 +7,5 @@
 - [x] Tela Clientes (cadastrar, editar, desativar/reativar, histórico, incluir no mês atual)
 - [x] Testes das regras financeiras
 - [x] Verificação no navegador (tela de entrada; telas internas não testáveis sem login nesta conexão)
+- [x] Aplicativo para celular (PWA) e telas ajustadas para o toque
+- [x] Nome do cliente sempre visível por inteiro no celular (Recebimentos, Clientes, gerar cobranças)
