@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PreviewRowsRouteImport } from './routes/preview-rows'
 import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedRecebimentosRouteImport } from './routes/_authenticated/recebimentos'
 
@@ -29,6 +30,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PreviewRowsRoute = PreviewRowsRouteImport.update({
+  id: '/preview-rows',
+  path: '/preview-rows',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedClientesRoute = AuthenticatedClientesRouteImport.update({
   id: '/clientes',
   path: '/clientes',
@@ -44,12 +50,14 @@ const AuthenticatedRecebimentosRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/preview-rows': typeof PreviewRowsRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/recebimentos': typeof AuthenticatedRecebimentosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/preview-rows': typeof PreviewRowsRoute
   '/clientes': typeof AuthenticatedClientesRoute
   '/recebimentos': typeof AuthenticatedRecebimentosRoute
 }
@@ -58,19 +66,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/preview-rows': typeof PreviewRowsRoute
   '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/recebimentos': typeof AuthenticatedRecebimentosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/clientes' | '/recebimentos'
+  fullPaths: '/' | '/auth' | '/preview-rows' | '/clientes' | '/recebimentos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/clientes' | '/recebimentos'
+  to: '/' | '/auth' | '/preview-rows' | '/clientes' | '/recebimentos'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/preview-rows'
     | '/_authenticated/clientes'
     | '/_authenticated/recebimentos'
   fileRoutesById: FileRoutesById
@@ -79,6 +89,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  PreviewRowsRoute: typeof PreviewRowsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -102,6 +113,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/preview-rows': {
+      id: '/preview-rows'
+      path: '/preview-rows'
+      fullPath: '/preview-rows'
+      preLoaderRoute: typeof PreviewRowsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/clientes': {
@@ -138,6 +156,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  PreviewRowsRoute: PreviewRowsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
