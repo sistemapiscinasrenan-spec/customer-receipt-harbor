@@ -138,26 +138,26 @@ function Recebimentos() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold">Recebimentos</h1>
+          <h1 className="text-2xl font-semibold sm:text-3xl">Recebimentos</h1>
           <p className="mt-1 text-muted-foreground">{label}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid grid-cols-[minmax(0,1fr)_6rem_auto] items-center gap-2 sm:flex sm:flex-wrap">
           <Select value={String(month)} onValueChange={(v) => setMonth({ mes: Number(v) })}>
-            <SelectTrigger className="w-36 bg-card" aria-label="Mês"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-11 w-full bg-card sm:h-9 sm:w-36" aria-label="Mês"><SelectValue /></SelectTrigger>
             <SelectContent>
               {MONTH_NAMES.map((name, i) => <SelectItem key={name} value={String(i + 1)}>{name}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={String(year)} onValueChange={(v) => setMonth({ ano: Number(v) })}>
-            <SelectTrigger className="w-24 bg-card" aria-label="Ano"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-11 w-full bg-card sm:h-9 sm:w-24" aria-label="Ano"><SelectValue /></SelectTrigger>
             <SelectContent>
               {yearOptions(now.year).map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Button variant="outline" size="icon" onClick={() => refetch()} aria-label="Atualizar dados" disabled={isFetching}>
+          <Button variant="outline" size="icon" className="size-11 sm:size-9" onClick={() => refetch()} aria-label="Atualizar dados" disabled={isFetching}>
             <RefreshCw className={isFetching ? "animate-spin" : ""} />
           </Button>
-          <Button onClick={() => setGenerateOpen(true)}>
+          <Button className="col-span-3 h-11 sm:h-9" onClick={() => setGenerateOpen(true)}>
             <CalendarPlus /> Gerar cobranças
           </Button>
         </div>
@@ -179,7 +179,7 @@ function Recebimentos() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <Tabs value={filter} onValueChange={(v) => setFilter(v as StatusFilter)}>
-              <TabsList>
+              <TabsList className="grid h-11 w-full grid-cols-3 sm:inline-flex sm:h-9 sm:w-auto">
                 <TabsTrigger value="all">Todos ({charges.length})</TabsTrigger>
                 <TabsTrigger value="paid">Pagos ({summary.paidCount})</TabsTrigger>
                 <TabsTrigger value="pending">Pendentes ({summary.pendingCount})</TabsTrigger>
@@ -187,7 +187,7 @@ function Recebimentos() {
             </Tabs>
             <div className="relative sm:w-64">
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Buscar cliente" className="bg-card pl-9" aria-label="Buscar cliente" />
+              <Input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Buscar cliente" className="h-11 bg-card pl-9 text-base sm:h-9 sm:text-sm" aria-label="Buscar cliente" />
             </div>
           </div>
 
@@ -212,9 +212,9 @@ function Recebimentos() {
                         return (
                           <li
                             key={`${c.id}-${flashIds.has(c.id) ? c.updated_at : ""}`}
-                            className={`flex items-center gap-3 px-4 py-3 ${flashIds.has(c.id) ? "animate-row-flash" : ""}`}
+                            className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-4 py-3 sm:flex ${flashIds.has(c.id) ? "animate-row-flash" : ""}`}
                           >
-                            <div className="w-24 shrink-0"><StatusBadge status={c.status} /></div>
+                            <div className="hidden w-24 shrink-0 sm:block"><StatusBadge status={c.status} /></div>
                             <div className="min-w-0 flex-1">
                               <div className="truncate font-medium">{c.client_name_snapshot}</div>
                               {c.status === "paid" && c.paid_at && (
@@ -222,15 +222,16 @@ function Recebimentos() {
                               )}
                             </div>
                             <div className="num shrink-0 text-right font-semibold">{formatBRL(toCents(c.amount))}</div>
-                            <div className="w-36 shrink-0 text-right sm:w-44">
+                            <div className="col-span-2 flex items-center justify-between gap-2 sm:w-44 sm:shrink-0 sm:justify-end">
+                              <span className="sm:hidden"><StatusBadge status={c.status} /></span>
                               {c.status === "pending" ? (
-                                <Button size="sm" variant="soft-success" disabled={busy} onClick={() => changeStatus([c.id], "paid")}>
+                                <Button size="sm" variant="soft-success" className="h-10 sm:h-8" disabled={busy} onClick={() => changeStatus([c.id], "paid")}>
                                   {busy ? <Loader2 className="animate-spin" /> : <Check />}
                                   <span className="hidden sm:inline">Marcar como pago</span>
-                                  <span className="sm:hidden">Pago</span>
+                                  <span className="sm:hidden">Marcar pago</span>
                                 </Button>
                               ) : (
-                                <Button size="sm" variant="ghost" className="text-muted-foreground" disabled={busy} onClick={() => changeStatus([c.id], "pending")}>
+                                <Button size="sm" variant="ghost" className="h-10 text-muted-foreground sm:h-8" disabled={busy} onClick={() => changeStatus([c.id], "pending")}>
                                   {busy ? <Loader2 className="animate-spin" /> : <RotateCcw />}
                                   <span className="hidden sm:inline">Desfazer pagamento</span>
                                   <span className="sm:hidden">Desfazer</span>

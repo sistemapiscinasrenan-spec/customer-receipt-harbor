@@ -26,17 +26,17 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b bg-card/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b bg-card/90 pt-[env(safe-area-inset-top)] backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:px-6">
           <Link to="/recebimentos" className="flex items-center gap-2.5">
             <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Waves className="size-5" />
             </span>
-            <span className="hidden font-display text-lg font-semibold leading-none sm:block">
+            <span className="font-display text-lg font-semibold leading-none">
               Gestão de Cobranças
             </span>
           </Link>
-          <nav className="ml-2 flex items-center gap-1 sm:ml-6">
+          <nav className="ml-6 hidden items-center gap-1 sm:flex">
             {navItems.map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
@@ -58,7 +58,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+      <main className="mx-auto max-w-6xl px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-5 sm:px-6 sm:py-8">
         {access.isPending ? (
           <div className="flex justify-center py-24 text-muted-foreground">
             <Loader2 className="size-6 animate-spin" />
@@ -74,6 +74,22 @@ export function AppShell({ children }: { children: ReactNode }) {
           children
         )}
       </main>
+      <nav
+        aria-label="Navegação principal"
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 border-t bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:hidden"
+      >
+        {navItems.map(({ to, label, icon: Icon }) => (
+          <Link
+            key={to}
+            to={to}
+            className="flex h-16 flex-col items-center justify-center gap-1 text-xs font-medium text-muted-foreground"
+            activeProps={{ className: "text-primary" }}
+          >
+            <Icon className="size-5" />
+            {label}
+          </Link>
+        ))}
+      </nav>
     </div>
   );
 }

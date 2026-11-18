@@ -149,17 +149,17 @@ function Clientes() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold">Clientes</h1>
+          <h1 className="text-2xl font-semibold sm:text-3xl">Clientes</h1>
           <p className="num mt-1 text-muted-foreground">
             {activeCount} ativos · carteira mensal {formatBRL(activeTotal)}
           </p>
         </div>
-        <Button onClick={() => { setEditing(null); setFormOpen(true); }}><Plus /> Novo cliente</Button>
+        <Button className="h-11 sm:h-9" onClick={() => { setEditing(null); setFormOpen(true); }}><Plus /> Novo cliente</Button>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Tabs value={filter} onValueChange={(v) => setFilter(v as SituationFilter)}>
-          <TabsList>
+          <TabsList className="grid h-11 w-full grid-cols-3 sm:inline-flex sm:h-9 sm:w-auto">
             <TabsTrigger value="active">Ativos</TabsTrigger>
             <TabsTrigger value="inactive">Inativos</TabsTrigger>
             <TabsTrigger value="all">Todos</TabsTrigger>
@@ -167,7 +167,7 @@ function Clientes() {
         </Tabs>
         <div className="relative sm:w-64">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Buscar cliente" className="bg-card pl-9" aria-label="Buscar cliente" />
+          <Input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Buscar cliente" className="h-11 bg-card pl-9 text-base sm:h-9 sm:text-sm" aria-label="Buscar cliente" />
         </div>
       </div>
 
@@ -199,7 +199,7 @@ function Clientes() {
                 <div className="row-span-2 flex justify-end md:row-span-1">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" aria-label={`Ações de ${c.name}`}><MoreHorizontal /></Button>
+                      <Button variant="ghost" size="icon" className="size-11 md:size-9" aria-label={`Ações de ${c.name}`}><MoreHorizontal /></Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onSelect={() => { setEditing(c); setFormOpen(true); }}><Pencil /> Editar</DropdownMenuItem>
