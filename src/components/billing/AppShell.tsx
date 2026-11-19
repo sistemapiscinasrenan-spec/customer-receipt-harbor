@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouteContext } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ThemeToggle } from "@/components/billing/ThemeToggle";
 import { LogOut, Users, Wallet, Waves, Loader2, ShieldAlert } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
           <div className="ml-auto flex items-center gap-2">
             <span className="hidden max-w-48 truncate text-sm text-muted-foreground md:block">{user.email}</span>
+            <ThemeToggle />
             <Button variant="ghost" size="sm" onClick={handleSignOut} aria-label="Sair">
               <LogOut />
               <span className="hidden sm:inline">Sair</span>
