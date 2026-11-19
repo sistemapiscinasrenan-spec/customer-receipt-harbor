@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useRef, useState } from "react";
-import { CalendarPlus, Loader2, RefreshCw, RotateCcw, Search, Check } from "lucide-react";
+import { CalendarPlus, Loader2, MessageCircle, RefreshCw, RotateCcw, Search, Check } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { AppShell } from "@/components/billing/AppShell";
@@ -9,11 +9,14 @@ import { GenerateDialog } from "@/components/billing/GenerateDialog";
 import { QuickCommand } from "@/components/billing/QuickCommand";
 import { StatusBadge } from "@/components/billing/StatusBadge";
 import { SummaryCards } from "@/components/billing/SummaryCards";
+import { WhatsAppDialog } from "@/components/billing/WhatsAppDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { monthChargesQuery, setChargesStatus, type Charge } from "@/lib/billing-api";
+import {
+  clientsQuery, monthChargesQuery, setChargesStatus, setClientWhatsapp, templatesQuery, type Charge,
+} from "@/lib/billing-api";
 import { filterCharges, groupByDueDay, summarize, type StatusFilter } from "@/lib/finance";
 import { formatBRL, toCents } from "@/lib/money";
 import { MONTH_NAMES, currentMonth, formatTimestampBR, monthLabel, referenceMonth, yearOptions } from "@/lib/months";
@@ -80,6 +83,23 @@ function Recebimentos() {
   const busyRef = useRef(new Set<string>());
   const [busyIds, setBusyIds] = useState<Set<string>>(new Set());
   const [flashIds, setFlashIds] = useState<Set<string>>(new Set());
+  const [whatsFor, setWhatsFor] = useState<Charge | null>(null);
+  const clients = useQuery(clientsQuery());
+  const templates = useQuery(templatesQuery());
+  const phoneByClient = useMemo(
+    () => new Map((clients.data ?? []).map((c) => [c.id, c.whatsapp])),
+    [clients.data],
+  );
+
+  async function savePhone(clientId: string, phone: string) {
+    try {
+      await setClientWhatsapp(clientId, phone);
+      await queryClient.invalidateQueries({ queryKey: ["clients"] });
+      toast.success("WhatsApp salvo no cadastro do cliente.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Não foi possível salvar o WhatsApp.");
+    }
+  }
 
   const summary = useMemo(() => summarize(charges), [charges]);
   const visible = useMemo(() => filterCharges(charges, filter, term), [charges, filter, term]);
@@ -227,13 +247,26 @@ function Recebimentos() {
                                 <span className="num truncate text-sm font-semibold">{formatBRL(toCents(c.amount))}</span>
                               </div>
                               <div className="num hidden shrink-0 text-right font-semibold sm:block">{formatBRL(toCents(c.amount))}</div>
-                              <div className="sm:flex sm:w-44 sm:shrink-0 sm:items-center sm:justify-end sm:gap-2">
+                              <div className="sm:flex sm:w-64 sm:shrink-0 sm:items-center sm:justify-end sm:gap-2">
                                 {c.status === "pending" ? (
+                                  <span className="flex items-center gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="size-10 px-0 sm:h-8 sm:w-auto sm:px-3"
+                                    onClick={() => setWhatsFor(c)}
+                                    aria-label={`Enviar cobrança por WhatsApp para ${c.client_name_snapshot}`}
+                                    title={phoneByClient.get(c.client_id) ? "Enviar cobrança por WhatsApp" : "Enviar cobrança por WhatsApp (sem número no cadastro)"}
+                                  >
+                                    <MessageCircle className={phoneByClient.get(c.client_id) ? "text-success" : "text-muted-foreground"} />
+                                    <span className="hidden sm:inline">Cobrar</span>
+                                  </Button>
                                   <Button size="sm" variant="soft-success" className="h-10 sm:h-8" disabled={busy} onClick={() => changeStatus([c.id], "paid")}>
                                     {busy ? <Loader2 className="animate-spin" /> : <Check />}
                                     <span className="hidden sm:inline">Marcar como pago</span>
                                     <span className="sm:hidden">Marcar pago</span>
                                   </Button>
+                                  </span>
                                 ) : (
                                   <Button size="sm" variant="ghost" className="h-10 text-muted-foreground sm:h-8" disabled={busy} onClick={() => changeStatus([c.id], "pending")}>
                                     {busy ? <Loader2 className="animate-spin" /> : <RotateCcw />}
@@ -254,6 +287,14 @@ function Recebimentos() {
           )}
         </>
       )}
+
+      <WhatsAppDialog
+        charge={whatsFor}
+        clientPhone={whatsFor ? (phoneByClient.get(whatsFor.client_id) ?? null) : null}
+        templates={templates.data}
+        onOpenChange={(open) => !open && setWhatsFor(null)}
+        onSavePhone={savePhone}
+      />
 
       <GenerateDialog
         open={generateOpen}

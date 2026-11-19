@@ -1,7 +1,7 @@
 import { Link, useNavigate, useRouteContext } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ThemeToggle } from "@/components/billing/ThemeToggle";
-import { LogOut, Users, Wallet, Waves, Loader2, ShieldAlert } from "lucide-react";
+import { LogOut, Users, Wallet, Waves, Loader2, ShieldAlert, MessageSquareText } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,7 @@ import { accessQuery } from "@/lib/billing-api";
 const navItems = [
   { to: "/recebimentos", label: "Recebimentos", icon: Wallet },
   { to: "/clientes", label: "Clientes", icon: Users },
+  { to: "/mensagens", label: "Mensagens", icon: MessageSquareText },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -78,7 +79,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </main>
       <nav
         aria-label="Navegação principal"
-        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 border-t bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:hidden"
       >
         {navItems.map(({ to, label, icon: Icon }) => (
           <Link

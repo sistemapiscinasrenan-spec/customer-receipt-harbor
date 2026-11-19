@@ -24,6 +24,7 @@ import {
 import { normalizeName } from "@/lib/finance";
 import { formatBRL, toCents } from "@/lib/money";
 import { currentMonth, formatTimestampBR, monthLabel, referenceMonth } from "@/lib/months";
+import { formatPhone } from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/_authenticated/clientes")({
   loader: ({ context }) => context.queryClient.ensureQueryData(clientsQuery()),
@@ -185,6 +186,9 @@ function Clientes() {
                   <div className="break-words font-medium sm:truncate">{c.name}</div>
                   <div className="text-xs text-muted-foreground md:hidden">
                     Dia {String(c.due_day).padStart(2, "0")} · {formatBRL(toCents(c.recurring_amount))}
+                  </div>
+                  <div className="num text-xs text-muted-foreground">
+                    {c.whatsapp ? `WhatsApp ${formatPhone(c.whatsapp)}` : "Sem WhatsApp"}
                   </div>
                 </div>
                 <span className="num hidden text-sm md:block">Dia {String(c.due_day).padStart(2, "0")}</span>

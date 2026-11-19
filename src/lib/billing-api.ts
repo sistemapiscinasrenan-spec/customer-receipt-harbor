@@ -4,6 +4,7 @@ import type { Tables } from "@/integrations/supabase/types";
 
 export type Client = Tables<"clients">;
 export type Charge = Tables<"monthly_charges">;
+export type MessageTemplate = Tables<"message_templates">;
 
 const CHARGE_COLUMNS =
   "id, client_id, client_name_snapshot, amount, due_date, reference_month, status, paid_at, created_at, updated_at";
@@ -95,12 +96,14 @@ export interface ClientInput {
   name: string;
   amountCents: number;
   dueDay: number;
+  /** Digits with country code, or null when not informed. */
+  whatsapp: string | null;
 }
 
 export async function createClient(input: ClientInput): Promise<Client> {
   const { data, error } = await supabase
     .from("clients")
-    .insert({ name: input.name.trim(), recurring_amount: input.amountCents / 100, due_day: input.dueDay })
+    .insert({ name: input.name.trim(), recurring_amount: input.amountCents / 100, due_day: input.dueDay, whatsapp: input.whatsapp })
     .select("*")
     .single();
   if (error) fail(error, "Não foi possível cadastrar o cliente");
@@ -110,7 +113,7 @@ export async function createClient(input: ClientInput): Promise<Client> {
 export async function updateClient(id: string, input: ClientInput): Promise<Client> {
   const { data, error } = await supabase
     .from("clients")
-    .update({ name: input.name.trim(), recurring_amount: input.amountCents / 100, due_day: input.dueDay })
+    .update({ name: input.name.trim(), recurring_amount: input.amountCents / 100, due_day: input.dueDay, whatsapp: input.whatsapp })
     .eq("id", id)
     .select("*")
     .single();
@@ -137,4 +140,31 @@ export async function clientIdsWithCharge(referenceMonth: string): Promise<Set<s
     .eq("reference_month", referenceMonth);
   if (error) fail(error, "Não foi possível consultar as cobranças do mês");
   return new Set((data ?? []).map((r) => r.client_id));
+}
+
+export async function setClientWhatsapp(id: string, whatsapp: string): Promise<Client> {
+  const { data, error } = await supabase.from("clients").update({ whatsapp }).eq("id", id).select("*").single();
+  if (error) fail(error, "Não foi possível salvar o WhatsApp do cliente");
+  return data;
+}
+
+export const templatesQuery = () =>
+  queryOptions({
+    queryKey: ["message-templates"],
+    queryFn: async (): Promise<MessageTemplate[]> => {
+      const { data, error } = await supabase.from("message_templates").select("*");
+      if (error) fail(error, "Não foi possível carregar os modelos de mensagem");
+      return data ?? [];
+    },
+  });
+
+export async function updateTemplate(kind: string, body: string): Promise<MessageTemplate> {
+  const { data, error } = await supabase
+    .from("message_templates")
+    .update({ body })
+    .eq("kind", kind)
+    .select("*")
+    .single();
+  if (error) fail(error, "Não foi possível salvar o modelo");
+  return data;
 }

@@ -24,6 +24,7 @@ export type Database = {
           name: string
           recurring_amount: number
           updated_at: string
+          whatsapp: string | null
         }
         Insert: {
           created_at?: string
@@ -34,6 +35,7 @@ export type Database = {
           name: string
           recurring_amount: number
           updated_at?: string
+          whatsapp?: string | null
         }
         Update: {
           created_at?: string
@@ -43,6 +45,28 @@ export type Database = {
           is_active?: boolean
           name?: string
           recurring_amount?: number
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      message_templates: {
+        Row: {
+          body: string
+          created_at: string
+          kind: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          kind: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          kind?: string
           updated_at?: string
         }
         Relationships: []

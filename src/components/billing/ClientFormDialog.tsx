@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { Client, ClientInput } from "@/lib/billing-api";
 import { centsToInput, parseBRLInput, toCents } from "@/lib/money";
+import { formatPhone, normalizePhone } from "@/lib/whatsapp";
 
 export function ClientFormDialog({
   open,
@@ -26,8 +27,9 @@ export function ClientFormDialog({
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [dueDay, setDueDay] = useState("");
+  const [phone, setPhone] = useState("");
   const [includeNow, setIncludeNow] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string; amount?: string; dueDay?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; amount?: string; dueDay?: string; phone?: string }>({});
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -35,13 +37,16 @@ export function ClientFormDialog({
     setName(client?.name ?? "");
     setAmount(client ? centsToInput(toCents(client.recurring_amount)) : "");
     setDueDay(client ? String(client.due_day) : "");
+    setPhone(formatPhone(client?.whatsapp));
     setIncludeNow(false);
     setErrors({});
   }, [open, client]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const next: { name?: string; amount?: string; dueDay?: string } = {};
+    const next: { name?: string; amount?: string; dueDay?: string; phone?: string } = {};
+    const whatsapp = phone.trim() ? normalizePhone(phone) : null;
+    if (phone.trim() && !whatsapp) next.phone = "Informe o número com DDD, por exemplo (11) 95844-3371.";
     const cents = parseBRLInput(amount);
     const day = Number(dueDay);
     if (!name.trim()) next.name = "Informe o nome do cliente.";
@@ -51,7 +56,7 @@ export function ClientFormDialog({
     if (Object.keys(next).length > 0 || cents === null) return;
     setBusy(true);
     try {
-      await onSubmit({ name: name.trim(), amountCents: cents, dueDay: day }, includeNow);
+      await onSubmit({ name: name.trim(), amountCents: cents, dueDay: day, whatsapp }, includeNow);
       onOpenChange(false);
     } finally {
       setBusy(false);
@@ -74,6 +79,11 @@ export function ClientFormDialog({
             <Label htmlFor="client-name">Nome</Label>
             <Input id="client-name" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
             {errors.name && <p className="text-xs text-danger">{errors.name}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="client-phone">WhatsApp <span className="font-normal text-muted-foreground">(opcional)</span></Label>
+            <Input id="client-phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="(11) 95844-3371" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            {errors.phone && <p className="text-xs text-danger">{errors.phone}</p>}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
